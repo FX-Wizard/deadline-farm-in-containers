@@ -1,0 +1,66 @@
+services:
+
+  mongodb:
+    container_name: deadline_db
+    image: mongo:6.0
+    # ports:
+    #   - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  deadline_repository:
+    container_name: deadline_repository
+    build:
+      context: .
+      dockerfile: Dockerfile.repository
+    depends_on:
+     - mongodb
+    volumes:
+      - ./repository:/opt/Thinkbox/DeadlineRepository10
+      - repo_install:/opt/Thinkbox/Deadline10
+      - repo_config:/var/lib/Thinkbox
+      # Share certs into all Deadline containers
+      - ./certs:/opt/Thinkbox/certs:ro
+    secrets:
+      - mongo_password
+
+  deadline_rcs:
+    container_name: deadline_rcs
+    build:
+      context: .
+      dockerfile: Dockerfile.rcs
+    deploy:
+      replicas: 0
+    depends_on:
+      - mongodb
+    # depends_on:
+    #   deadline_repository:
+    #     condition: service_started
+    volumes:
+      - ./repository:/opt/Thinkbox/DeadlineRepository10
+      - ./certs:/opt/Thinkbox/certs:ro
+    ports:
+      - "8080:8080"
+      - "4433:4433"
+    secrets:
+      - mongo_password
+
+  deadline_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    # Change the replicas value to scale the number of worker containers
+    deploy:
+      replicas: 0
+    depends_on:
+      deadline_rcs:
+        condition: service_started
+
+volumes:
+  mongo_data:
+  repo_install:
+  repo_config:
+
+secrets:
+  mongo_password:
+    file: ./secrets/mongo_password.txt

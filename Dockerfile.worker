@@ -1,0 +1,24 @@
+FROM almalinux:8
+
+# Enable CRB and EPEL repos, install Mono (provides mono and libgdiplus), and other deps
+RUN dnf install -y epel-release && \
+    dnf config-manager --set-enabled powertools && \
+    dnf install -y \
+      redhat-lsb-core && \
+    dnf clean all
+
+# Copy the installer
+COPY ./installers/DeadlineClient-10.4.2.3-linux-x64-installer.run /tmp/
+
+RUN chmod +x /tmp/DeadlineClient-10.4.2.3-linux-x64-installer.run && \
+    /tmp/DeadlineClient-10.4.2.3-linux-x64-installer.run \
+      --mode unattended \
+      --connectiontype Remote \
+      --proxyrootdir deadline_rcs:8080 \
+      --slavestartup true \
+      --launcherdaemon true \
+      --daemonuser root
+
+# Run the Deadline Launcher in the foreground to keep the container alive
+# The Launcher will automatically start the Worker process (slavestartup true)
+CMD ["/opt/Thinkbox/Deadline10/bin/deadlinelauncher", "-nogui"]

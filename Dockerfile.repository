@@ -1,0 +1,20 @@
+FROM almalinux:8
+
+# Enable CRB and EPEL repos, install Mono (provides mono and libgdiplus), and other deps
+RUN dnf install -y epel-release && \
+    dnf install -y \
+      file \
+      bzip2 \
+      openssl \
+      redhat-lsb-core && \
+    dnf clean all
+
+# Copy the installer and entrypoint script
+COPY ./installers/DeadlineRepository-10.4.2.3-linux-x64-installer.run /tmp/
+COPY ./scripts/install-repository.sh /usr/local/bin/install-repository.sh
+
+RUN chmod +x /tmp/DeadlineRepository-10.4.2.3-linux-x64-installer.run \
+              /usr/local/bin/install-repository.sh
+
+ENTRYPOINT ["/usr/local/bin/install-repository.sh"]
+CMD ["tail", "-f", "/dev/null"]

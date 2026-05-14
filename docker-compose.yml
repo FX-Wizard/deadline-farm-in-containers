@@ -15,7 +15,6 @@ services:
      - mongodb
     volumes:
       - ./repository:/opt/Thinkbox/DeadlineRepository10
-      - repo_install:/opt/Thinkbox/Deadline10
       - repo_config:/var/lib/Thinkbox
       # Share certs into all Deadline containers
       - ./certs:/opt/Thinkbox/certs:ro
@@ -48,7 +47,22 @@ services:
       deadline_rcs:
         condition: service_started
 
+  deadline_webservice:
+    container_name: deadline_webservice
+    build:
+      context: .
+      dockerfile: Dockerfile.webservice
+    deploy:
+      replicas: 1
+    depends_on:
+      - mongodb
+    volumes:
+      - ./repository:/opt/Thinkbox/DeadlineRepository10
+      - ./certs:/opt/Thinkbox/Deadline10/certs
+    ports:
+      - "8081:8081"
+      - "4434:4434"
+
 volumes:
   mongo_data:
-  repo_install:
   repo_config:

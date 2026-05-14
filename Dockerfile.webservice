@@ -1,0 +1,27 @@
+FROM almalinux:8
+
+# Enable CRB and EPEL repos, install Mono (provides mono and libgdiplus), and other deps
+RUN dnf install -y epel-release && \
+    dnf config-manager --set-enabled powertools && \
+    dnf install -y \
+      redhat-lsb-core\
+      bzip2 \
+      mesa-libGL && \
+    dnf clean all
+
+COPY ./installers/DeadlineClient-10.4.2.3-linux-x64-installer.run /tmp/
+
+RUN chmod +x /tmp/DeadlineClient-10.4.2.3-linux-x64-installer.run && \
+    /tmp/DeadlineClient-10.4.2.3-linux-x64-installer.run \
+      --mode unattended \
+      --connectiontype Direct \
+      --repositorydir /opt/Thinkbox/DeadlineRepository10 \
+      --webservice_enabletls false \
+      --slavestartup false \
+      --enable-components webservice_config
+
+
+EXPOSE 8080
+
+# Run the startup script which writes deadline.ini then launches the RCS
+CMD ["/opt/Thinkbox/Deadline10/bin/deadlinelauncher", "-webservice", "-nogui"]

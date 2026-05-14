@@ -11,16 +11,8 @@
 1. Download the installers from AWS
 2. Extract the Deadline installer files into the `installers` folder
 
-### 2. Create the MongoDB Secret
 
-Create the `secrets` directory and add a password file (this is gitignored):
-
-```bash
-mkdir -p secrets
-echo "yourpasswordhere" > secrets/mongo_password.txt
-```
-
-### 3. Build and Start All Services
+### 2. Build and Start All Services
 
 ```bash
 docker compose build

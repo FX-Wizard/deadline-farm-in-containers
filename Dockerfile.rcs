@@ -4,7 +4,9 @@ FROM almalinux:8
 RUN dnf install -y epel-release && \
     dnf config-manager --set-enabled powertools && \
     dnf install -y \
-      redhat-lsb-core && \
+      redhat-lsb-core\
+      bzip2 \
+      mesa-libGL && \
     dnf clean all
 
 # RCS uses the same DeadlineClient installer, just with different flags

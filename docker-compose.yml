@@ -26,12 +26,13 @@ services:
       context: .
       dockerfile: Dockerfile.rcs
     deploy:
-      replicas: 0
+      replicas: 1
     depends_on:
       - mongodb
     volumes:
       - ./repository:/opt/Thinkbox/DeadlineRepository10
-      - ./certs:/opt/Thinkbox/certs:ro
+      - ./rcs/deadline.ini:/var/lib/Thinkbox/Deadline10/deadline.ini
+      - ./certs:/opt/Thinkbox/Deadline10/certs
     ports:
       - "8080:8080"
       - "4433:4433"

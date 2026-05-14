@@ -17,10 +17,12 @@ RUN chmod +x /tmp/DeadlineClient-10.4.2.3-linux-x64-installer.run && \
       --mode unattended \
       --connectiontype Direct \
       --repositorydir /opt/Thinkbox/DeadlineRepository10 \
+      --enabletls false \
+      --slavestartup false \
       --enable-components proxyconfig 
 
 
 EXPOSE 8080
 
 # Run the startup script which writes deadline.ini then launches the RCS
-CMD ["/opt/Thinkbox/Deadline10/bin/deadlinelauncher", "-rcs", "--noguimode"]
+CMD ["/opt/Thinkbox/Deadline10/bin/deadlinelauncher", "-rcs", "-nogui"]
